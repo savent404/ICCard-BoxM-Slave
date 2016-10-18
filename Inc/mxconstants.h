@@ -47,8 +47,8 @@
 #define SPI_NSS_GPIO_Port GPIOA
 #define RS485_RD_Pin GPIO_PIN_1
 #define RS485_RD_GPIO_Port GPIOB
-#define Beep_Pin GPIO_PIN_9
-#define Beep_GPIO_Port GPIOA
+#define Usr_LED_Pin GPIO_PIN_10
+#define Usr_LED_GPIO_Port GPIOA
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

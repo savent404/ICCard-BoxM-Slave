@@ -76,6 +76,7 @@ int stdin_getchar (void) {
 	return buf;
 }
 int stdout_putchar (int ch) {
+	HAL_GPIO_WritePin(RS485_RD_GPIO_Port, RS485_RD_Pin, GPIO_PIN_SET);
 	HAL_UART_Transmit(&huart1, (uint8_t*)&ch, 1, 10);
 	return ch;
 }
@@ -175,10 +176,10 @@ int main(void)
 			HAL_GPIO_WritePin(Beep_GPIO_Port, Beep_Pin, GPIO_PIN_RESET);
 			HAL_Delay(100);
 			BSP_ICCard_UID(UID_buf);
-			for (i = 0; i < 10; i++)
-				printf("0x%X ", UID_buf[i]);
-			putchar('\n');
-			dbg_printf("ID card Found\n");
+			putchar('A');
+			for (i = 0; i < 8; i++)
+				printf("%c", UID_buf[i]);
+			putchar('B');
 		}
 	}
   /* USER CODE END 3 */
@@ -194,12 +195,11 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL6;
   RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -261,10 +261,10 @@ static void MX_USART1_UART_Init(void)
 {
 
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 38400;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.StopBits = UART_STOPBITS_2;
+  huart1.Init.Parity = UART_PARITY_ODD;
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
@@ -292,6 +292,7 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOF_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOA, RSTPD_Pin|Beep_Pin, GPIO_PIN_RESET);
@@ -299,12 +300,22 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI_NSS_GPIO_Port, SPI_NSS_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(RS485_RD_GPIO_Port, RS485_RD_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pins : RSTPD_Pin SPI_NSS_Pin */
   GPIO_InitStruct.Pin = RSTPD_Pin|SPI_NSS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : RS485_RD_Pin */
+  GPIO_InitStruct.Pin = RS485_RD_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(RS485_RD_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : Beep_Pin */
   GPIO_InitStruct.Pin = Beep_Pin;

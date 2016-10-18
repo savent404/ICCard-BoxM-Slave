@@ -125,7 +125,14 @@ unsigned char WriteRawRC(unsigned char Address, unsigned char value) {
 
 /* USER CODE BEGIN 0 */
  uint8_t UID_buf[10], i;
-
+unsigned char Check_Func(unsigned char* pt) {
+	int num = 8;
+	unsigned char ans = 0;
+	
+	while (num--)
+		ans += *pt++;
+	return ans;
+}
 
 /* USER CODE END 0 */
 
@@ -182,6 +189,7 @@ int main(void)
 				printf("%c", UID_buf[i]);
 			putchar(0x55);
 			putchar(0x55);
+			putchar(Check_Func(UID_buf));
 		}
 	}
   /* USER CODE END 3 */

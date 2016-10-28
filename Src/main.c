@@ -176,6 +176,8 @@ int main(void)
 	dbg_printf("Init start\n");
 	
 	if (BSP_IDCard_Init() == 0) {
+		printf("A");
+		
 		//HAL_GPIO_WritePin(Beep_GPIO_Port, Beep_Pin, GPIO_PIN_SET);
 		BEEP_ON
 		HAL_Delay(500);
